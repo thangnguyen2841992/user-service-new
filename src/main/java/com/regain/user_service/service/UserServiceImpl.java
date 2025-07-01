@@ -1,9 +1,11 @@
 package com.regain.user_service.service;
 
+import com.regain.user_service.model.MessageResponseUser;
 import com.regain.user_service.model.Role;
 import com.regain.user_service.model.User;
 import com.regain.user_service.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +23,9 @@ public class UserServiceImpl implements IUserService {
 
     @Autowired
     private IUserRepository userRepository;
+
+    @Autowired
+    private KafkaTemplate<String, Object> kafkaTemplate;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -43,6 +48,12 @@ public class UserServiceImpl implements IUserService {
                 } else {
                     user.setActive(true);
                     this.userRepository.save(user);
+                    MessageResponseUser messageResponseUser = new MessageResponseUser();
+                    messageResponseUser.setToUserEmail(user.getEmail());
+                    messageResponseUser.setToUserName(user.getUsername());
+                    messageResponseUser.setToUserFullName(user.getFirstName() + " " + user.getLastName());
+                    messageResponseUser.setToUserId(user.getUserId());
+                    kafkaTemplate.send("send-email-active-response", messageResponseUser);
                     return "Kích hoạt tài khoản thành công!";
                 }
             }

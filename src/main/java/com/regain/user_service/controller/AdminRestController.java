@@ -5,11 +5,10 @@ import com.regain.user_service.service.IUserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/admin-api")
@@ -20,5 +19,16 @@ public class AdminRestController {
     @GetMapping("/getAllUser")
     public ResponseEntity<List<User>> getAllUsers() {
         return new ResponseEntity<>(this.userService.getAllUser(), HttpStatus.OK);
+    }
+
+    @PostMapping("/blockUser")
+    public ResponseEntity<User> blockUser(@RequestBody User user ) {
+        Optional<User> userOptional = this.userService.findByUserId(user.getUserId());
+        if(userOptional.isPresent()) {
+            userOptional.get().setBlock(true);
+            this.userService.saveUser(userOptional.get());
+            return new ResponseEntity<>(userOptional.get(), HttpStatus.OK);
+        }
+        return new ResponseEntity<>(new User(), HttpStatus.OK);
     }
 }

@@ -54,4 +54,14 @@ public class UserServiceImpl implements IUserService {
     public List<User> getAllUser() {
         return this.userRepository.findAll();
     }
+
+    @Override
+    public Optional<User> findByUserId(int userId) {
+        return this.userRepository.findById(userId);
+    }
+
+    @Override
+    public User saveUser(User user) {
+        return this.userRepository.save(user);
+    }
 }

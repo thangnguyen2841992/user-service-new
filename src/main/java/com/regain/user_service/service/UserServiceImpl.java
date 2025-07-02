@@ -75,4 +75,9 @@ public class UserServiceImpl implements IUserService {
     public User saveUser(User user) {
         return this.userRepository.save(user);
     }
+
+    @Override
+    public List<User> findAllUsers() {
+        return this.userRepository.findAllUsers();
+    }
 }

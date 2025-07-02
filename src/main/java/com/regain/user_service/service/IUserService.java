@@ -14,4 +14,6 @@ public interface IUserService extends UserDetailsService {
     Optional<User> findByUserId(int  userId);
 
     User saveUser(User user);
+
+    List<User> findAllUsers();
 }

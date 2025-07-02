@@ -18,7 +18,7 @@ public class AdminRestController {
 
     @GetMapping("/getAllUser")
     public ResponseEntity<List<User>> getAllUsers() {
-        return new ResponseEntity<>(this.userService.getAllUser(), HttpStatus.OK);
+        return new ResponseEntity<>(this.userService.findAllUsers(), HttpStatus.OK);
     }
 
     @PostMapping("/blockUser")

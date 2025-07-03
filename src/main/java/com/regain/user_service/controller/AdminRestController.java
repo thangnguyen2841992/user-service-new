@@ -21,6 +21,13 @@ public class AdminRestController {
         return new ResponseEntity<>(this.userService.findAllUsers(), HttpStatus.OK);
     }
 
+    @GetMapping("/getAllStaff")
+    public ResponseEntity<List<User>> getAllStaff() {
+        return new ResponseEntity<>(this.userService.findAllStaff(), HttpStatus.OK);
+    }
+
+
+
     @PostMapping("/blockUser")
     public ResponseEntity<User> blockUser(@RequestBody User user ) {
         Optional<User> userOptional = this.userService.findByUserId(user.getUserId());

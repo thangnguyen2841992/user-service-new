@@ -80,4 +80,9 @@ public class UserServiceImpl implements IUserService {
     public List<User> findAllUsers() {
         return this.userRepository.findAllUsers();
     }
+
+    @Override
+    public List<User> findAllStaff() {
+        return this.userRepository.findAllStaff();
+    }
 }

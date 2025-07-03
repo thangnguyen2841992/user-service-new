@@ -16,4 +16,6 @@ public interface IUserService extends UserDetailsService {
     User saveUser(User user);
 
     List<User> findAllUsers();
+
+    List<User> findAllStaff();
 }

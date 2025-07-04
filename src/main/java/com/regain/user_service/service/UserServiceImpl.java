@@ -1,11 +1,14 @@
 package com.regain.user_service.service;
 
+import com.regain.user_service.model.MessageBirthDay;
 import com.regain.user_service.model.MessageResponseUser;
 import com.regain.user_service.model.Role;
 import com.regain.user_service.model.User;
 import com.regain.user_service.repository.IUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,6 +16,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
@@ -85,4 +89,33 @@ public class UserServiceImpl implements IUserService {
     public List<User> findAllStaff() {
         return this.userRepository.findAllStaff();
     }
+
+    @Scheduled(cron = "0 14 13 * * ?")
+    public void checkBirthDay() {
+        List<User> users = this.userRepository.findAll();
+        Calendar today = Calendar.getInstance();
+        int currentDay = today.get(Calendar.DAY_OF_MONTH);
+        int currentMonth = today.get(Calendar.MONTH); // Tháng bắt đầu từ 0
+
+        for (User user : users) {
+            Calendar birthday = Calendar.getInstance();
+            birthday.setTime(user.getBirthday());
+
+            if (birthday.get(Calendar.DAY_OF_MONTH) == currentDay &&
+                    birthday.get(Calendar.MONTH) == currentMonth) {
+                MessageBirthDay messageBirthDay = new MessageBirthDay();
+                messageBirthDay.setUserId(user.getUserId());
+                messageBirthDay.setFullName(user.getFirstName() + " " + user.getLastName());
+                messageBirthDay.setStaff(true);
+                messageBirthDay.setEmail(user.getEmail());
+                for (Role role : user.getRoles()) {
+                    if (role.getRoleName().equals("ROLE_USER")) {
+                        messageBirthDay.setStaff(false);
+                    }
+                }
+                kafkaTemplate.send("send-email-birthday-response", messageBirthDay);
+            }
+        }
+    }
+
 }

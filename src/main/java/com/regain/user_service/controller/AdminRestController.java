@@ -26,8 +26,6 @@ public class AdminRestController {
         return new ResponseEntity<>(this.userService.findAllStaff(), HttpStatus.OK);
     }
 
-
-
     @PostMapping("/blockUser")
     public ResponseEntity<User> blockUser(@RequestBody User user ) {
         Optional<User> userOptional = this.userService.findByUserId(user.getUserId());
@@ -36,6 +34,6 @@ public class AdminRestController {
             this.userService.saveUser(userOptional.get());
             return new ResponseEntity<>(userOptional.get(), HttpStatus.OK);
         }
-        return new ResponseEntity<>(new User(), HttpStatus.OK);
+        return new ResponseEntity<>(new User(), HttpStatus.BAD_REQUEST);
     }
 }

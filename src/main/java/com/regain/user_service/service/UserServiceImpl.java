@@ -90,7 +90,7 @@ public class UserServiceImpl implements IUserService {
         return this.userRepository.findAllStaff();
     }
 
-    @Scheduled(cron = "0 14 13 * * ?")
+    @Scheduled(cron = "0 55 07 * * ?")
     public void checkBirthDay() {
         List<User> users = this.userRepository.findAll();
         Calendar today = Calendar.getInstance();
